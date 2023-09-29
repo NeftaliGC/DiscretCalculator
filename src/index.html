@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"/>
+        <title>Discret Calculator</title>
+        <link rel="stylesheet" href="css/index.css">
+        <script defer src="scripts/resolveZone.js"></script>
+    </head>
+    <body>
+        <h1>Discret Calculator</h1>
+        <h3>¿Que quieres hacer?</h3>
+
+        <div>
+            <button class="button" id="siPrimo">Numero primo y su factorizacion</button>
+            <button class="button" id="mcd">Maximo comun divisor</button>
+            <button class="button" id="totient">Funcion totient de euler</button>
+            <button class="button" id="combLineal">Combinacion lineal</button>
+            <button class="button" id="rEqModulares">Resolver sistema de ecuaciones modulares</button>
+            <button class="button" id="encript">Encriptacion</button>
+            <button class="button" id="desencript">Desencriptacion</button>
+
+        </div>
+        <div id="resolveZone"></div>
+
+    </body>
+</html>

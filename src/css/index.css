@@ -1,0 +1,43 @@
+body {
+    background-color: #CDB4DB;
+    color: #000000cb;
+}
+
+h1 {
+    font-size: 3rem;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+h3 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 10px;
+    padding: 10px;
+}
+
+.button {
+    background-color: #FFAFCC;
+    border: none;
+    border-radius: 5px;
+    color: #000000cb;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.90rem;
+    margin: 10px;
+    cursor: pointer;
+}
+
+#resolveZone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    margin: 10px;
+    padding: 10px;
+    
+}
