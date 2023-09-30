@@ -12,7 +12,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^26.2.4"
+    "electron": "^26.2.4",
+    "big-integer": "^1.6.51"
   },
   "eslintConfig": {
     "extends": "standard",
@@ -20,5 +21,8 @@
       "error",
       4
     ]
+  },
+  "dependencies": {
+    "big-integer": "^1.6.51"
   }
 }

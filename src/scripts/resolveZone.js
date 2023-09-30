@@ -1,11 +1,11 @@
 const $ = selector => document.querySelector(selector);
-
 const $isPrimo = $('#siPrimo')
 const $mcd = $('#mcd')
 const $totient = $('#totient')
 const $combLineal = $('#combLineal')
 const $rEqModulares = $('#rEqModulares')
 const $resolveZone = $('#resolveZone')
+const $encript = $('#encript')
 
 $isPrimo.addEventListener('click', () => {
     // Crear un formulario dentro del div "resolveZone"
@@ -221,6 +221,209 @@ $rEqModulares.addEventListener('click', () => {
     });
 });
 
+$encript.addEventListener('click', () => {
+    // Crear un formulario dentro del div "resolveZone"
+    $resolveZone.innerHTML = `
+        <p> Abecedario de encriptacion: </p>
+        <p> A = 00, B = 01, C = 02, D = 03, E = 04, F = 05, G = 06, H = 07, I = 08, J = 09, K = 10, L = 11, M = 12, N = 13, O = 14, P = 15, Q = 16, R = 17, S = 18, T = 19, U = 20, V = 21, W = 22, X = 23, Y = 24, Z = 25, " " = 26 </p>
+        <button class="button" id="rsa">Metodo RSA</button>
+        <button class="button" id="expo">Metodo exponencial</button>
+    `;
+
+    // Agregar un manejador de eventos para el botón "rsa"
+    const rsa = document.getElementById('rsa');
+    rsa.addEventListener('click', () => {
+        $resolveZone.innerHTML = `
+            <form id="rsaForm">
+                <label for="p">Ingrese P:</label>
+                <input type="number" id="p" name="p" required>
+                <label for="q">Ingrese Q:</label>
+                <input type="number" id="q" name="q" required>
+                <label for="n">Ingrese N (o deje en blanco si no lo sabe):</label>
+                <input type="number" id="n" name="n">
+                <label for="e">Ingrese e:</label>
+                <input type="number" id="e" name="e" required>
+                <label for="message">Ingrese el mensaje:</label>
+                <input type="text" id="message" name="message" required>
+                <button class="button" type="submit">Calcular</button>
+            </form>
+        `;
+
+        const pInput = document.getElementById("p");
+        const qInput = document.getElementById("q");
+        const nInput = document.getElementById("n");
+
+        nInput.addEventListener("input", function () {
+            const nValue = nInput.value.trim(); // Obtener el valor de 'n' sin espacios en blanco
+
+            // Habilitar o deshabilitar los campos 'p' y 'q' en función de 'n'
+            if (nValue === "") {
+                pInput.removeAttribute("disabled");
+                qInput.removeAttribute("disabled");
+            } else {
+                pInput.setAttribute("disabled", true);
+                qInput.setAttribute("disabled", true);
+            }
+        });
+
+        // Agregar un manejador de eventos para el formulario
+        const rsaForm = document.getElementById('rsaForm');
+        rsaForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Evitar que se recargue la página
+            const p = parseInt(document.getElementById('p').value);
+            const q = parseInt(document.getElementById('q').value);
+            let nan = parseInt(document.getElementById('n').value);
+            const e = parseInt(document.getElementById('e').value);
+            const message = document.getElementById('message').value;
+            console.log(nan);
+            if (isNaN(nan)) {
+                // Si nan es NaN, asignarle el valor de p * q
+                nan = p * q;
+            }
+            console.log(nan);
+
+            const alfabeto = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', " "];
+            const encriptAlfabet = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10','11', '12', '13', '14', '15', '16', '17', '18', '19', '20','21', '22', '23', '24', '25', '26'];
+
+                // Calcular el rEqModulares y mostrar el resultado
+                if(isPrimo(p) && isPrimo(q) || nan != null && Number.isInteger(nan) && n > 0 && isPrimo(nan) && calcMCD(e, nan-1) === 1) {
+                    let n = nan;
+                    let totient = calcTotient(n);
+                    let d = calcInversoModulo(e, totient);
+
+                    $resolveZone.innerHTML += `n = ${n}, totient = ${totient}, d = ${d}<br/>`;
+
+                    
+        
+                    let mensaje = message.toUpperCase();
+                    let mensajeBloques = splitInBlocksString(mensaje);
+                    let mensajeCodificado = [];
+                    let mensajeEncriptado = [];
+                    mensajeBloques.forEach(element => {
+                        let codificado = '';
+                        for (let i = 0; i < element.length; i++) {
+                            let letra = element[i];
+                            let index = alfabeto.indexOf(letra);
+                            codificado += encriptAlfabet[index];
+                            console.log(`${letra} = ${index} = ${encriptAlfabet[index]}`);
+                        }
+                        mensajeCodificado.push(codificado);
+                    });
+
+
+                    console.log(mensajeCodificado);
+                    console.log(mensajeBloques);
+                    console.log(mensajeEncriptado);
+                    
+                    mensajeBloques.forEach(element => {
+                        $resolveZone.innerHTML += `${element}-`;
+                    });
+
+                    $resolveZone.innerHTML += '<br/>';
+                    $resolveZone.innerHTML += '<p>Mensaje codificado:</p>';
+                    mensajeCodificado.forEach(element => { 
+                        $resolveZone.innerHTML += `${element} `;
+                    });
+                    
+                    $resolveZone.innerHTML += '<p>Mensaje encriptado:</p>';
+                    $resolveZone.innerHTML += '<br/>';
+                    console.log(`${Math.pow(1103, 7)}, ${Math.pow(1103, 7) % 2867}`);
+                    mensajeCodificado.forEach(element => {
+                        let num = BigInt(element);
+                        let p = num ** BigInt(e);
+                        let encriptado = p % BigInt(n);
+                        console.log(`${num}^${e} mod ${n} = ${encriptado}`);
+                        mensajeEncriptado.push(encriptado);
+                        $resolveZone.innerHTML += `${encriptado} `;
+                    });
+                    $resolveZone.innerHTML += '<p>Copea este mensaje encriptado y pegalo en el boton de desencriptar</p>';
+
+                } else {
+                    $resolveZone.innerHTML = 'Ingresa números enteros positivos válidos.  p, q deben ser primos, e debe ser coprimo con (p-1)(q-1)';
+                }
+        });
+    });
+
+    // Agregar un manejador de eventos para el botón "expo"
+    const expo = document.getElementById('expo');
+    expo.addEventListener('click', () => {
+        $resolveZone.innerHTML = `
+            <form id="expoForm">
+                <label for="p">Ingrese P:</label>
+                <input type="number" id="p" name="p" required>
+                <label for="exponente">Ingrese e:</label>
+                <input type="number" id="exponente" name="exponente" required>
+                <label for="message">Ingrese el mensaje:</label>
+                <input type="text" id="message" name="message" required>
+                <button class="button" type="submit">Calcular</button>
+            </form>
+        `;
+
+        // Agregar un manejador de eventos para el formulario
+        const expoForm = document.getElementById('expoForm');
+        expoForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Evitar que se recargue la página
+            const p = parseInt(document.getElementById('p').value);
+            const exponente = parseInt(document.getElementById('exponente').value);
+            const message = document.getElementById('message').value;
+
+            const alfabeto = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', " "];
+            const encriptAlfabet = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10','11', '12', '13', '14', '15', '16', '17', '18', '19', '20','21', '22', '23', '24', '25', '26'];
+
+
+            console.log(`P=${p}, e=${exponente}, m=${message}`);
+
+            if (Number.isInteger(p) && Number.isInteger(exponente) && p > 0 && exponente > 0) {
+                // Calcular el rEqModulares y mostrar el resultado
+                if(isPrimo(p) && calcMCD(exponente, p-1) === 1) {
+                    let mensaje = message.toUpperCase();
+                    let mensajeBloques = splitInBlocksString(mensaje);
+                    let mensajeCodificado = [];
+                    let mensajeEncriptado = [];
+
+                    mensajeBloques.forEach(element => {
+                        $resolveZone.innerHTML += `${element}-`;
+                    });
+
+                    mensajeBloques.forEach(element => {
+                        let codificado = '';
+                        for (let i = 0; i < element.length; i++) {
+                            let letra = element[i];
+                            let index = alfabeto.indexOf(letra);
+                            codificado += encriptAlfabet[index];
+                            console.log(`${letra} = ${index} = ${encriptAlfabet[index]}`);
+                        }
+                        mensajeCodificado.push(codificado);
+                    });
+
+                    console.log(mensajeCodificado);
+
+                    $resolveZone.innerHTML += '<p>Mensaje codificado:</p>';
+                    mensajeCodificado.forEach(element => { 
+                        $resolveZone.innerHTML += `${element} `;
+                    });
+
+                    $resolveZone.innerHTML += '<p>Mensaje encriptado:</p>';
+                    $resolveZone.innerHTML += '<br/>';
+
+                    mensajeCodificado.forEach(element => {
+                        let num = BigInt(element);
+                        let k = num ** BigInt(exponente);
+                        let encriptado = k % BigInt(p);
+                        console.log(`${num}^${exponente} mod ${p} = ${encriptado}`);
+                        mensajeEncriptado.push(encriptado);
+                        $resolveZone.innerHTML += `${encriptado} `;
+                    });
+
+                    $resolveZone.innerHTML += '<p>Copea este mensaje encriptado y pegalo en el boton de desencriptar</p>';
+                }
+            }
+        });
+
+    });
+});
+
+
 function calcCombLineal(numero1, numero2) {
     if (numero2 === 0) {
         const result = [1, 0, numero1];
@@ -402,10 +605,52 @@ function calcREqModulares(coeficientes, numeros, modulos) {
                 mod[i] = modulos[i];
             }
         }
+    
         console.log(cof);
         for (let i = 0; i < cof.length; i++) {
             $resolveZone.innerHTML += `${cof[i]}X ≡ ${num[i]} (MOD ${mod[i]})<br/>`;
             
+            
         }
     }
+}
+
+function splitInBlocksString(mensaje) {
+    let blocks = [];
+    let block = '';
+    for (let i = 0; i < mensaje.length; i++) {
+        block += mensaje[i];
+        if (i % 2 === 1) {
+            blocks.push(block);
+            block = '';
+        }
+    }
+    if (block.length > 0) {
+        while (block.length < 2) {
+            block += ' ';
+        }
+        blocks.push(block);
+    }
+
+    return blocks;
+}
+
+function calcInversoModulo(q, mod) {
+        let temp = calcCombLineal(q, mod);
+
+        let m1 = temp[0] % mod;
+        let m2 = temp[1] % mod;
+
+        if (m1 < 0) {
+            m1 += mod;
+        }
+        if (m2 < 0) {
+            m2 += mod;
+        }
+
+        if((m1 * q) % mod == 1) {
+            return m1;
+        } else {
+            return m2;
+        }
 }
