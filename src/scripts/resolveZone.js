@@ -6,6 +6,7 @@ const $combLineal = $('#combLineal')
 const $rEqModulares = $('#rEqModulares')
 const $resolveZone = $('#resolveZone')
 const $encript = $('#encript')
+const $desencript = $('#desencript')
 
 $isPrimo.addEventListener('click', () => {
     // Crear un formulario dentro del div "resolveZone"
@@ -125,9 +126,10 @@ $combLineal.addEventListener('click', () => {
             console.log(combLineal);
             let a = combLineal[0];
             let b = combLineal[1];
-            //let gcd = combLineal[2];
+            let gcd = combLineal[2];
 
-            $resolveZone.innerHTML = `El combLineal de ${numero1} y ${numero2} es Combinación lineal: ${b} (${numero2}) + (${a}) (${numero1})`;
+            $resolveZone.innerHTML = `El combinacion Lineal de ${numero1} y ${numero2} es Combinación lineal: ${a} (${numero1}) + (${b}) (${numero2}) = ${gcd}. <br/>`;
+            $resolveZone.innerHTML += `Soluciones generales en ax + by = gcd(a,b): <br/> x= ${a} - ${numero2}/${gcd}k <br/> y= ${b} + ${numero1}/${gcd}k <br/>`;
         } else {
             $resolveZone.innerHTML = 'Ingresa dos números enteros positivos válidos.';
         }
@@ -201,9 +203,9 @@ $rEqModulares.addEventListener('click', () => {
         const numero8 = parseInt(document.getElementById('numero8').value);
         const numero9 = parseInt(document.getElementById('numero9').value);
 
-        if (Number.isInteger(numero1) && Number.isInteger(numero2) && Number.isInteger(numero3) && numero1 > 0 && numero2 > 0 && numero3 > 0
-            && Number.isInteger(numero4) && Number.isInteger(numero5) && Number.isInteger(numero6) && numero4 > 0 && numero5 > 0 && numero6 > 0
-            && Number.isInteger(numero7) && Number.isInteger(numero8) && Number.isInteger(numero9) && numero7 > 0 && numero8 > 0 && numero9 > 0    
+        if (Number.isInteger(numero1) && Number.isInteger(numero2) && Number.isInteger(numero3) && numero1 >= 0 && numero2 >= 0 && numero3 >= 0
+            && Number.isInteger(numero4) && Number.isInteger(numero5) && Number.isInteger(numero6) && numero4 >= 0 && numero5 >= 0 && numero6 >= 0
+            && Number.isInteger(numero7) && Number.isInteger(numero8) && Number.isInteger(numero9) && numero7 >= 0 && numero8 >= 0 && numero9 >= 0    
         ) {
             let coeficientes = [numero1, numero4, numero7];
             console.log(coeficientes);
@@ -327,7 +329,7 @@ $encript.addEventListener('click', () => {
                     
                     $resolveZone.innerHTML += '<p>Mensaje encriptado:</p>';
                     $resolveZone.innerHTML += '<br/>';
-                    console.log(`${Math.pow(1103, 7)}, ${Math.pow(1103, 7) % 2867}`);
+                
                     mensajeCodificado.forEach(element => {
                         let num = BigInt(element);
                         let p = num ** BigInt(e);
@@ -423,6 +425,92 @@ $encript.addEventListener('click', () => {
     });
 });
 
+$desencript.addEventListener('click', () => {
+    $resolveZone.innerHTML = `
+        <p> Abecedario de encriptacion: </p>
+        <p> A = 00, B = 01, C = 02, D = 03, E = 04, F = 05, G = 06, H = 07, I = 08, J = 09, K = 10, L = 11, M = 12, N = 13, O = 14, P = 15, Q = 16, R = 17, S = 18, T = 19, U = 20, V = 21, W = 22, X = 23, Y = 24, Z = 25, " " = 26 </p>
+        <p> 
+            Es importante aclarar que esta funcion es valida para ambos metodos de encriptacion <br>
+            Lo que cambia es que en el metodo RSA N no sera un numero primo, sino el producto de dos numeros primos <br>
+            y en el metodo exponencial N sera primo y el exponente sera el inverso multiplicativo de e mod (p-1)(q-1) <br>
+
+        </p>
+        <button class="button" id="rsa">Desencriptar</button>
+    `;
+
+    // Agregar un manejador de eventos para el botón "rsa"
+    const rsa = document.getElementById('rsa');
+    rsa.addEventListener('click', () => {
+        $resolveZone.innerHTML = `
+            <form id="rsaForm">
+                <label for="n">Ingrese N:</label>
+                <input type="number" id="n" name="n" required>
+                <label for="e">Ingrese e:</label>
+                <input type="number" id="e" name="e" required>
+                <label for="message">Ingrese el mensaje codificado:</label>
+                <input type="text" id="message" name="message" required>
+                <button class="button" type="submit">Calcular</button>
+            </form>
+            <p>Ingresa el mensaje encriptado en bloques de 4 digitos separados por un espacio, ejemplo: 245 2224 1814 2071 1305</p>
+        `;
+
+        // Agregar un manejador de eventos para el formulario
+        const rsaForm = document.getElementById('rsaForm');
+        rsaForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Evitar que se recargue la página
+            const n = parseInt(document.getElementById('n').value);
+            const e = parseInt(document.getElementById('e').value);
+            const message = document.getElementById('message').value;
+
+            const alfabeto = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O','P','Q','R','S','T','U','V','W','X','Y','Z', " "];
+            const encriptAlfabet = ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15', '16','17','18','19','20','21','22','23','24','25','26'];
+
+            let mensaje = message.split(' ');
+            let mensajeDesencriptado = [];
+            let mensajeCodificado = [];
+
+            let d = calcInversoModulo(e, calcTotient(n));
+
+            mensaje.forEach(element => {
+                let num = BigInt(element);
+                let p = num ** BigInt(d);
+                let desencriptado = p % BigInt(n);
+                console.log(`${num}^${d} mod ${n} = ${desencriptado}`);
+                mensajeDesencriptado.push(desencriptado);
+            });
+
+            mensajeDesencriptado.forEach(element => {
+                let num = element.toString();
+                let longitudDeseada = 4; // Puedes ajustar la longitud deseada según tus necesidades
+                
+                // Calcular cuántos ceros se deben agregar
+                let cerosFaltantes = longitudDeseada - num.length;
+                
+                // Agregar los ceros necesarios a la izquierda del número
+                for (let i = 0; i < cerosFaltantes; i++) {
+                    num = '0' + num;
+                }
+                
+                console.log(num);
+                
+                // El resto de tu código para la encriptación
+                let codificado = '';
+                for (let i = 0; i < num.length; i += 2) {
+                    let index = encriptAlfabet.indexOf(num[i] + num[i + 1]);
+                    codificado += alfabeto[index];
+                }
+                
+                mensajeCodificado.push(codificado);
+            });
+            
+            
+
+            mensajeCodificado.forEach(element => {
+                $resolveZone.innerHTML += `${element}`;
+            });
+        });
+    });
+});
 
 function calcCombLineal(numero1, numero2) {
     if (numero2 === 0) {
@@ -437,7 +525,8 @@ function calcCombLineal(numero1, numero2) {
         const newX = y;
         const newY = x - Math.floor(numero1 / numero2) * y;
 
-        const result = [newX, newY];
+        const result = [newX, newY, gcd];
+        console.log(result);
         return result;
     }
 }
@@ -637,6 +726,7 @@ function splitInBlocksString(mensaje) {
 
 function calcInversoModulo(q, mod) {
         let temp = calcCombLineal(q, mod);
+        console.log(temp);
 
         let m1 = temp[0] % mod;
         let m2 = temp[1] % mod;
